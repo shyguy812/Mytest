@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный тест по математике и логике</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .question, .result-page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .question label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .question img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        /* Анимация переходов */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Интерактивный тест по математике и логике</h1>
+
+    <!-- Страница вопросов -->
+    <div id="q1" class="question active fade-in">
+        <h3>1. Сколько будет 5 + 3?</h3>
+        <img src="https://via.placeholder.com/150" alt="Картинка 1">
+        <label><input type="radio" name="q1" value="6"> 6</label>
+        <label><input type="radio" name="q1" value="8"> 8</label>
+        <label><input type="radio" name="q1" value="7"> 7</label>
+        <button onclick="nextQuestion(1)">Следующий</button>
+    </div>
+
+    <div id="q2" class="question">
+        <h3>2. Найди лишнее: круг, квадрат, треугольник, яблоко</h3>
+        <img src="https://via.placeholder.com/150" alt="Картинка 2">
+        <label><input type="radio" name="q2" value="круг"> Круг</label>
+        <label><input type="radio" name="q2" value="яблоко"> Яблоко</label>
+        <label><input type="radio" name="q2" value="треугольник"> Треугольник</label>
+        <button onclick="nextQuestion(2)">Следующий</button>
+    </div>
+
+    <div id="q3" class="question">
+        <h3>3. Сколько углов у квадрата?</h3>
+        <img src="https://via.placeholder.com/150" alt="Картинка 3">
+        <label><input type="radio" name="q3" value="3"> 3</label>
+        <label><input type="radio" name="q3" value="4"> 4</label>
+        <label><input type="radio" name="q3" value="5"> 5</label>
+        <button onclick="nextQuestion(3)">Следующий</button>
+    </div>
+
+    <div id="q4" class="question">
+        <h3>4. Продолжи последовательность: 2, 4, 6, ...</h3>
+        <img src="https://via.placeholder.com/150" alt="Картинка 4">
+        <label><input type="radio" name="q4" value="7"> 7</label>
+        <label><input type="radio" name="q4" value="8"> 8</label>
+        <label><input type="radio" name="q4" value="9"> 9</label>
+        <button onclick="nextQuestion(4)">Следующий</button>
+    </div>
+
+    <div id="q5" class="question">
+        <h3>5. Найди правильное уравнение: 5 + ? = 10</h3>
+        <img src="https://via.placeholder.com/150" alt="Картинка 5">
+        <label><input type="radio" name="q5" value="4"> 4</label>
+        <label><input type="radio" name="q5" value="5"> 5</label>
+        <label><input type="radio" name="q5" value="6"> 6</label>
+        <button onclick="showResults()">Проверить результаты</button>
+    </div>
+
+    <!-- Страница с результатами -->
+    <div id="resultPage" class="result-page">
+        <h2>Результаты теста</h2>
+        <div id="result"></div>
+        <button onclick="restartTest()">Пройти заново</button>
+    </div>
+</div>
+
+<script>
+    let userAnswers = [];
+
+    function nextQuestion(questionNumber) {
+        let selectedAnswer = document.querySelector('input[name="q' + questionNumber + '"]:checked');
+        if (!selectedAnswer) {
+            alert("Пожалуйста, выберите ответ перед переходом к следующему вопросу.");
+            return;
+        }
+
+        // Сохраняем ответ
+        userAnswers[questionNumber - 1] = selectedAnswer.value;
+
+        // Добавляем класс анимации для текущего вопроса
+        document.getElementById('q' + questionNumber).classList.add('fade-out');
+
+        // Через 500 мс переходим к следующему вопросу
+        setTimeout(() => {
+            document.getElementById('q' + questionNumber).classList.remove('active', 'fade-out');
+            document.getElementById('q' + (questionNumber + 1)).classList.add('active', 'fade-in');
+        }, 500);
+    }
+
+    function showResults() {
+        let selectedAnswer = document.querySelector('input[name="q5"]:checked');
+        if (!selectedAnswer) {
+            alert("Пожалуйста, выберите ответ перед проверкой результатов.");
+            return;
+        }
+
+        userAnswers[4] = selectedAnswer.value;
+
+        const correctAnswers = ['8', 'яблоко', '4', '8', '5'];
+        let score = 0;
+        let resultText = '';
+
+        for (let i = 0; i < correctAnswers.length; i++) {
+            if (userAnswers[i] === correctAnswers[i]) {
+                score++;
+                resultText += `<p>Вопрос ${i+1}: <span class="correct">Правильно</span> (Ваш ответ: ${userAnswers[i]}, Правильный ответ: ${correctAnswers[i]})</p>`;
+            } else {
+                resultText += `<p>Вопрос ${i+1}: <span class="incorrect">Неправильно</span> (Ваш ответ: ${userAnswers[i]}, Правильный ответ: ${correctAnswers[i]})</p>`;
+            }
+        }
+
+        document.querySelector('.question.active').classList.remove('active');
+        document.getElementById('resultPage').classList.add('active', 'fade-in');
+
+        resultText += `<p>Вы правильно ответили на ${score} из ${correctAnswers.length} вопросов.</p>`;
+        document.getElementById('result').innerHTML = resultText;
+    }
+
+    function restartTest() {
+        userAnswers = [];
+        document.getElementById('resultPage').classList.remove('active');
+        document.getElementById('q1').classList.add('active', 'fade-in');
+    }
+</script>
+
+</body>
+</html>
